@@ -11,11 +11,13 @@ pub enum Instruction {
     Match,
     Jump(usize),
     Split(usize, usize),
+    Hat,
 }
 
 impl Display for Instruction {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Instruction::Hat => write!(f, "hat ^"),
             Instruction::Char(c) => write!(f, "char {}", c),
             Instruction::Match => write!(f, "match"),
             Instruction::Jump(addr) => write!(f, "jump {:>04}", addr),

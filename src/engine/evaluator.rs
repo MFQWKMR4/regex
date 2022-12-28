@@ -48,6 +48,9 @@ fn eval_depth(
                     return Ok(false)
                 }
             }
+            Instruction::Hat => {
+                safe_add(&mut pc, &1, || Box::new(EvalError::PCOverFlow)); 
+            }
             Instruction::Match => {
                 return Ok(true)
             }

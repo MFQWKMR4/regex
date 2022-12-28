@@ -42,6 +42,7 @@ impl Generator {
             AST::Star(e) => self.gen_star(e)?,
             AST::Question(e) => self.gen_question(e)?,
             AST::Seq(v) => self.gen_seq(v)?,
+            AST::Hat => self.gen_hat()?,
         }
 
         Ok(())
@@ -116,6 +117,13 @@ impl Generator {
 
     fn gen_char(&mut self, c: char) -> Result<(), CodeGenError> {
         let inst = Instruction::Char(c);
+        self.insts.push(inst);
+        self.inc_pc()?;
+        Ok(())
+    }
+
+    fn gen_hat(&mut self) -> Result<(), CodeGenError> {
+        let inst = Instruction::Hat;
         self.insts.push(inst);
         self.inc_pc()?;
         Ok(())
