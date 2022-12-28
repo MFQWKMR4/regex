@@ -73,6 +73,8 @@ mod tests {
 
         // success
         assert!(do_matching("abc|def", "def", true).unwrap());
+        assert!(do_matching("abc|d.f", "def", true).unwrap());
+        assert!(do_matching(".*", "qwertyuioasdfghjkl", true).unwrap());
         assert!(do_matching("(abc)*", "abcabc", true).unwrap());
         assert!(do_matching("(ab|cd)+", "abcdcd", true).unwrap());
         assert!(do_matching("abc?", "ab", true).unwrap());
