@@ -43,6 +43,7 @@ impl Generator {
             AST::Question(e) => self.gen_question(e)?,
             AST::Seq(v) => self.gen_seq(v)?,
             AST::Hat => self.gen_hat()?,
+            AST::Dollar(e) => self.gen_dollar(e)?,
         }
 
         Ok(())
@@ -124,6 +125,14 @@ impl Generator {
 
     fn gen_hat(&mut self) -> Result<(), CodeGenError> {
         let inst = Instruction::Hat;
+        self.insts.push(inst);
+        self.inc_pc()?;
+        Ok(())
+    }
+
+    fn gen_dollar(&mut self, e: &AST) -> Result<(), CodeGenError> {
+        self.gen_expr(e)?;
+        let inst = Instruction::Dollar;
         self.insts.push(inst);
         self.inc_pc()?;
         Ok(())

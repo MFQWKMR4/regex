@@ -12,12 +12,14 @@ pub enum Instruction {
     Jump(usize),
     Split(usize, usize),
     Hat,
+    Dollar,
 }
 
 impl Display for Instruction {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Instruction::Hat => write!(f, "hat ^"),
+            Instruction::Dollar => write!(f, "dollar $"),
             Instruction::Char(c) => write!(f, "char {}", c),
             Instruction::Match => write!(f, "match"),
             Instruction::Jump(addr) => write!(f, "jump {:>04}", addr),
@@ -46,6 +48,12 @@ pub fn do_matching(expr: &str, line: &str, is_depth: bool) -> Result<bool, DynEr
     let ast = parser::parse(expr)?;
     let code = codegen::get_code(&ast)?;
     let line = line.chars().collect::<Vec<char>>();
-    Ok(evaluator::eval(&code, &line, is_depth)?)
+    for p in 0..line.len() {
+        let res = evaluator::eval(&code, p, &line, is_depth);
+        if let Ok(true) = res {
+            return Ok(true)
+        }
+    }
+    Ok(false)
 }
 

@@ -87,5 +87,20 @@ mod tests {
         assert!(!do_matching("abc?", "acb", true).unwrap());
     }
 
+    #[test]
+    fn test_dollar() {
+        // success
+        assert!(do_matching("a$", "abcdefa", true).unwrap());
+        assert!(do_matching("fa$", "abcdefa", true).unwrap());
+        // fail
+        assert!(!do_matching("af$", "abcdefa", true).unwrap());
+    }
+
+
+    #[test]
+    fn test_compli() {
+        assert!(do_matching("(a$)|abc", "abc", true).unwrap());
+        assert!(do_matching("(a$)|abc", "cba", true).unwrap());
+    }
 
 }

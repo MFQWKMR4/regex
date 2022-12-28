@@ -13,6 +13,7 @@ pub enum AST {
     Or(Box<AST>,Box<AST>),
     Seq(Vec<AST>),
     Hat,
+    Dollar(Box<AST>),
 }
 
 #[derive(Debug)]
@@ -58,22 +59,24 @@ fn parser_escape(pos: usize, c: char) -> Result<AST, ParserError> {
     }
 }
 
-enum PSQ {
+enum NeedPrev {
     Plus,
     Star,
     Question,
+    Dollar,
 }
 
-fn parse_plus_star_question (
+fn parse_need_prev_symbol (
     seq: &mut Vec<AST>,
-    ast_type: PSQ,
+    ast_type: NeedPrev,
     pos: usize,
 ) -> Result<(), ParserError> {
     if let Some(prev) = seq.pop() {
         let ast = match ast_type {
-            PSQ::Plus => AST::Plus(Box::new(prev)),
-            PSQ::Star => AST::Star(Box::new(prev)),
-            PSQ::Question => AST::Question(Box::new(prev)),
+            NeedPrev::Plus => AST::Plus(Box::new(prev)),
+            NeedPrev::Star => AST::Star(Box::new(prev)),
+            NeedPrev::Question => AST::Question(Box::new(prev)),
+            NeedPrev::Dollar => AST::Dollar(Box::new(prev)),
         };
         seq.push(ast);
         Ok(())
@@ -110,9 +113,10 @@ pub fn parse(expr: &str) -> Result<AST, ParserError> {
         match &state {
             ParseState::Char => {
                 match c {
-                    '+' => parse_plus_star_question(&mut seq, PSQ::Plus, i)?,
-                    '*' => parse_plus_star_question(&mut seq, PSQ::Star, i)?,
-                    '?' => parse_plus_star_question(&mut seq, PSQ::Question, i)?,
+                    '+' => parse_need_prev_symbol(&mut seq, NeedPrev::Plus, i)?,
+                    '*' => parse_need_prev_symbol(&mut seq, NeedPrev::Star, i)?,
+                    '?' => parse_need_prev_symbol(&mut seq, NeedPrev::Question, i)?,
+                    '$' => parse_need_prev_symbol(&mut seq, NeedPrev::Dollar, i)?,
                     '(' => {
                         let prev = take(&mut seq) ;
                         let prev_or = take(&mut seq_or);

@@ -51,6 +51,15 @@ fn eval_depth(
             Instruction::Hat => {
                 safe_add(&mut pc, &1, || Box::new(EvalError::PCOverFlow)); 
             }
+            Instruction::Dollar => {
+                if let Some(_sp_c) = line.get(sp) {
+                    println!("here0 {}", _sp_c);
+                    return  Ok(false);                    
+                } else {
+                    println!("here");
+                    safe_add(&mut pc, &1, || Box::new(EvalError::PCOverFlow));
+                }
+            }
             Instruction::Match => {
                 return Ok(true)
             }
@@ -72,9 +81,9 @@ fn eval_width(inst: &[Instruction],line: &[char]) -> Result<bool, EvalError> {
     return Ok(false)
 }
 
-pub fn eval(inst: &[Instruction], line: &[char], is_depth: bool) -> Result<bool, EvalError> {
+pub fn eval(inst: &[Instruction], start: usize, line: &[char], is_depth: bool) -> Result<bool, EvalError> {
     if is_depth {
-        eval_depth(inst, line, 0, 0)
+        eval_depth(inst, line, 0, start)
     } else {
         eval_width(inst, line)
     }
